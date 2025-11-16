@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Cognito Auth</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            margin: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #FF9900;
+            color: white;
+        }
+        button:hover {
+            background-color: #ec7211;
+        }
+        .download-link {
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 16px;
+            margin: 10px;
+            text-decoration: none;
+            border-radius: 4px;
+            background-color: #232F3E;
+            color: white;
+        }
+        .download-link:hover {
+            background-color: #1a2530;
+        }
+        .status {
+            font-size: 24px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .info {
+            margin: 10px 0;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="content"></div>
+    </div>
+
+    <script>
+        // AWS Cognito Configuration
+        const CONFIG = {
+            region: 'us-east-1',
+            userPoolId: 'us-east-1_4Hut6wr5p',
+            clientId: '2f4omubqjjigr6lq44els74v63',
+            domain: 'dev-pool-1762941170.auth.us-east-1.amazoncognito.com',
+            redirectUri: window.location.origin,
+            responseType: 'code',
+            scope: 'email openid phone'
+        };
+
+        // Parse URL parameters
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                code: params.get('code'),
+                error: params.get('error')
+            };
+        }
+
+        // Exchange authorization code for tokens
+        async function exchangeCodeForTokens(code) {
+            const tokenEndpoint = `https://${CONFIG.domain}/oauth2/token`;
+
+            const body = new URLSearchParams({
+                grant_type: 'authorization_code',
+                client_id: CONFIG.clientId,
+                code: code,
+                redirect_uri: CONFIG.redirectUri
+            });
+
+            try {
+                const response = await fetch(tokenEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: body.toString()
+                });
+
+                if (response.ok) {
+                    const tokens = await response.json();
+                    localStorage.setItem('tokens', JSON.stringify(tokens));
+                    return tokens;
+                }
+            } catch (error) {
+                console.error('Token exchange failed:', error);
+            }
+            return null;
+        }
+
+        // Build login URL
+        function getLoginUrl() {
+            const params = new URLSearchParams({
+                client_id: CONFIG.clientId,
+                response_type: CONFIG.responseType,
+                scope: CONFIG.scope,
+                redirect_uri: CONFIG.redirectUri
+            });
+            return `https://${CONFIG.domain}/login?${params.toString()}`;
+        }
+
+        // Build logout URL
+        function getLogoutUrl() {
+            const params = new URLSearchParams({
+                client_id: CONFIG.clientId,
+                logout_uri: CONFIG.redirectUri
+            });
+            return `https://${CONFIG.domain}/logout?${params.toString()}`;
+        }
+
+        // Check if user is authenticated
+        function isAuthenticated() {
+            return localStorage.getItem('tokens') !== null;
+        }
+
+        // Revoke tokens server-side
+        async function revokeToken(token) {
+            const revokeEndpoint = `https://${CONFIG.domain}/oauth2/revoke`;
+
+            const body = new URLSearchParams({
+                token: token,
+                client_id: CONFIG.clientId
+            });
+
+            try {
+                await fetch(revokeEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: body.toString()
+                });
+            } catch (error) {
+                console.error('Token revocation failed:', error);
+            }
+        }
+
+        // Handle logout
+        async function logout() {
+            // Revoke refresh token server-side
+            const tokens = localStorage.getItem('tokens');
+            if (tokens) {
+                try {
+                    const parsedTokens = JSON.parse(tokens);
+                    if (parsedTokens.refresh_token) {
+                        await revokeToken(parsedTokens.refresh_token);
+                    }
+                } catch (error) {
+                    console.error('Error during logout:', error);
+                }
+            }
+
+            // Clear local storage
+            localStorage.clear();
+
+            // Redirect to Cognito logout
+            window.location.href = getLogoutUrl();
+        }
+
+        // Display content based on auth state
+        async function displayContent() {
+            const container = document.getElementById('content');
+            const params = getUrlParams();
+
+            // Handle authorization code callback
+            if (params.code) {
+                container.innerHTML = '<p>Processing authentication...</p>';
+                const tokens = await exchangeCodeForTokens(params.code);
+
+                if (tokens) {
+                    // Clear URL parameters and reload to show user details
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    window.location.reload();
+                } else {
+                    container.innerHTML = `
+                        <div class="status">Authentication Failed</div>
+                        <button onclick="window.location.href = getLoginUrl()">Try Again</button>
+                    `;
+                }
+                return;
+            }
+
+            // Handle logout callback or error
+            if (params.error) {
+                container.innerHTML = `
+                    <div class="status">Not Authenticated</div>
+                    <button onclick="window.location.href = getLoginUrl()">Login with Cognito</button>
+                `;
+                return;
+            }
+
+            // Check existing session
+            if (isAuthenticated()) {
+                const tokens = JSON.parse(localStorage.getItem('tokens'));
+                const idToken = tokens.id_token;
+
+                // Decode JWT to get user info (simple base64 decode of payload)
+                const payload = JSON.parse(atob(idToken.split('.')[1]));
+
+                container.innerHTML = `
+                    <div class="status">✓ User Authenticated</div>
+                    <div class="info" style="margin: 20px 0; padding: 20px; background: #f9f9f9; border-radius: 4px; text-align: left;">
+                        <h3 style="margin-top: 0;">User Information</h3>
+                        <p><strong>Email:</strong> ${payload.email || 'N/A'}</p>
+                        <p><strong>Email Verified:</strong> ${payload.email_verified ? 'Yes' : 'No'}</p>
+                        <p><strong>User ID:</strong> ${payload.sub}</p>
+                        <p><strong>Token Expires:</strong> ${new Date(payload.exp * 1000).toLocaleString()}</p>
+                        <hr style="margin: 15px 0;">
+                        <h3>ID Token (for testing)</h3>
+                        <div style="position: relative;">
+                            <textarea id="tokenDisplay" readonly style="width: 100%; height: 100px; font-family: monospace; font-size: 11px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; resize: vertical;">${idToken}</textarea>
+                            <button onclick="copyToken()" style="margin-top: 8px; padding: 8px 16px; font-size: 14px;">Copy Token</button>
+                        </div>
+                    </div>
+                    <a href="#" onclick="downloadDMG(); return false;" class="download-link">Download DMG</a>
+                    <button onclick="logout()">Logout</button>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="status">Not Authenticated</div>
+                    <button onclick="window.location.href = getLoginUrl()">Login with Cognito</button>
+                `;
+            }
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', displayContent);
+
+        // Copy token to clipboard
+        function copyToken() {
+            const tokenDisplay = document.getElementById('tokenDisplay');
+            tokenDisplay.select();
+            document.execCommand('copy');
+
+            // Visual feedback
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = '✓ Copied!';
+            button.style.backgroundColor = '#28a745';
+
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.backgroundColor = '#FF9900';
+            }, 2000);
+        }
+
+        // Download DMG function
+        async function downloadDMG() {
+            try {
+                const tokens = JSON.parse(localStorage.getItem('tokens'));
+                const idToken = tokens.id_token;
+
+                const response = await fetch('http://localhost:8080/download/dmg', {
+                    headers: {
+                        'Authorization': `Bearer ${idToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.downloadUrl) {
+                        window.location.href = data.downloadUrl;
+                    }
+                } else {
+                    alert('Failed to get download URL');
+                }
+            } catch (error) {
+                console.error('Download failed:', error);
+                alert('Failed to initiate download');
+            }
+        }
+
+        // Make functions globally accessible
+        window.logout = logout;
+        window.getLoginUrl = getLoginUrl;
+        window.copyToken = copyToken;
+        window.downloadDMG = downloadDMG;
+    </script>
+</body>
+</html>

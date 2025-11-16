@@ -1,0 +1,75 @@
+/* Cognito Hosted UI - Custom CSS matching long-teng theme */
+
+.background-customizable {
+    background-color: #f2f4fd;
+}
+
+.banner-customizable {
+    background-color: #0f141e;
+    padding: 40px 0;
+}
+
+.logo-customizable {
+    max-width: 100%;
+    max-height: 80px;
+}
+
+.inputField-customizable {
+    border: 1px solid #d1d6e5;
+    border-radius: 4px;
+    color: #333b52;
+    padding: 10px 12px;
+}
+
+.inputField-customizable:focus {
+    border-color: #3e57da;
+    box-shadow: 0 0 0 3px rgba(62, 87, 218, 0.1);
+}
+
+.submitButton-customizable {
+    background-color: #3e57da;
+    border: none;
+    border-radius: 4px;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 12px 24px;
+}
+
+.submitButton-customizable:hover {
+    background-color: #2c43b8;
+}
+
+.redirect-customizable {
+    color: #3e57da;
+}
+
+.errorMessage-customizable {
+    color: #c32e0e;
+    background-color: #fff5f5;
+    border: 1px solid #fed7d7;
+    border-radius: 4px;
+    padding: 10px 12px;
+}
+
+.label-customizable {
+    color: #333b52;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.textDescription-customizable {
+    color: #474c56;
+}
+
+.socialButton-customizable {
+    border-radius: 4px;
+}
+
+.idpButton-customizable {
+    border-radius: 4px;
+    padding: 10px 12px;
+}
+
+.idpButton-customizable:hover {
+    opacity: 0.9;
+}
