@@ -301,7 +301,7 @@
                 const tokens = JSON.parse(localStorage.getItem('tokens'));
                 const idToken = tokens.id_token;
 
-                const response = await fetch('http://localhost:8080/download/dmg', {
+                const response = await fetch('https://xkbrjgriz2.execute-api.us-east-1.amazonaws.com/dev/download/dmg', {
                     headers: {
                         'Authorization': `Bearer ${idToken}`
                     }
