@@ -1,0 +1,50 @@
+.development-tab {
+  padding: 20px 0;
+}
+
+.development-tab .info-box {
+  margin: 20px 0;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 4px;
+  text-align: left;
+}
+
+.development-tab .info-box h3 {
+  margin-top: 0;
+}
+
+.development-tab .info-box h3:not(:first-child) {
+  margin-top: 20px;
+}
+
+.development-tab .info-box hr {
+  margin: 15px 0;
+  border: none;
+  border-top: 1px solid #ddd;
+}
+
+.development-tab .info-box textarea {
+  width: 100%;
+  height: 100px;
+  font-family: monospace;
+  font-size: 11px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.development-tab .actions {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.development-tab .download-btn {
+  background-color: #232F3E;
+}
+
+.development-tab .download-btn:hover {
+  background-color: #1a2530;
+}
