@@ -1,0 +1,78 @@
+/* Cognito Hosted UI - Custom Styling */
+
+.background-customizable {
+  background-color: #F7FAFC;
+}
+
+.banner-customizable {
+  background-color: #FFFFFF;
+  padding: 24px;
+}
+
+.logo-customizable {
+  max-width: 200px;
+  max-height: 80px;
+}
+
+.inputField-customizable {
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 16px;
+  color: #2D3748;
+  background-color: #FFFFFF;
+}
+
+.label-customizable {
+  color: #4A5568;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.submitButton-customizable {
+  background-color: #ED8936;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.textDescription-customizable {
+  color: #718096;
+  font-size: 14px;
+}
+
+.socialButton-customizable {
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #2D3748;
+  background-color: #FFFFFF;
+}
+
+.idpDescription-customizable {
+  color: #A0AEC0;
+  font-size: 14px;
+}
+
+.errorMessage-customizable {
+  color: #E53E3E;
+  font-size: 14px;
+}
+
+.redirect-customizable {
+  color: #718096;
+  font-size: 14px;
+}
+
+.passwordCheck-valid-customizable {
+  color: #38A169;
+}
+
+.passwordCheck-notValid-customizable {
+  color: #E53E3E;
+}
