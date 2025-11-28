@@ -1,49 +1,82 @@
 import { useState, useEffect } from 'react'
-import { getCurrentUser, fetchAuthSession, signInWithRedirect, signOut } from 'aws-amplify/auth'
-import { Box, Container, Flex, Text, Button, Spinner, Center, VStack, Heading } from '@chakra-ui/react'
+import { fetchAuthSession, signOut } from 'aws-amplify/auth'
+import { Authenticator, useAuthenticator, ThemeProvider } from '@aws-amplify/ui-react'
+import '@aws-amplify/ui-react/styles.css'
+import { Box, Container, Flex, Spinner, Center } from '@chakra-ui/react'
 import Header from './components/Header'
 import HomeTab from './components/HomeTab'
 import DevelopmentTab from './components/DevelopmentTab'
 
-function App() {
-  const [user, setUser] = useState(null)
+const authTheme = {
+  name: 'helper-tool-theme',
+  tokens: {
+    colors: {
+      background: {
+        primary: { value: '#F7FAFC' },
+      },
+      font: {
+        interactive: { value: '#ED8936' },
+      },
+      brand: {
+        primary: {
+          10: { value: '#FFF5EB' },
+          20: { value: '#FEEBD2' },
+          40: { value: '#FBD5A7' },
+          60: { value: '#ED8936' },
+          80: { value: '#DD6B20' },
+          90: { value: '#C05621' },
+          100: { value: '#9C4221' },
+        },
+      },
+    },
+    components: {
+      button: {
+        primary: {
+          backgroundColor: { value: '#ED8936' },
+          _hover: {
+            backgroundColor: { value: '#DD6B20' },
+          },
+        },
+      },
+      tabs: {
+        item: {
+          _active: {
+            color: { value: '#ED8936' },
+            borderColor: { value: '#ED8936' },
+          },
+        },
+      },
+    },
+  },
+}
+
+function AppContent() {
+  const { user: authUser, signOut: amplifySignOut } = useAuthenticator()
   const [session, setSession] = useState(null)
+  const [email, setEmail] = useState(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('home')
 
   useEffect(() => {
-    checkAuth()
-  }, [])
+    loadSession()
+  }, [authUser])
 
-  async function checkAuth() {
+  async function loadSession() {
     try {
-      const currentUser = await getCurrentUser()
       const authSession = await fetchAuthSession()
-
-      if (!authSession.tokens) {
-        throw new Error('No tokens')
-      }
-
-      const email = authSession.tokens.idToken?.payload?.email
-
-      setUser({ ...currentUser, email })
       setSession(authSession)
+      setEmail(authSession.tokens?.idToken?.payload?.email)
     } catch {
-      setUser(null)
       setSession(null)
+      setEmail(null)
     } finally {
       setLoading(false)
     }
   }
 
-  function login() {
-    signInWithRedirect()
-  }
-
-  async function logout() {
+  async function handleLogout() {
     await signOut()
-    setUser(null)
-    setSession(null)
+    amplifySignOut()
   }
 
   if (loading) {
@@ -54,50 +87,12 @@ function App() {
     )
   }
 
-  if (!user) {
-    return (
-      <Center h="100vh" bg="gray.50">
-        <Box
-          bg="white"
-          p={10}
-          borderRadius="xl"
-          boxShadow="lg"
-          textAlign="center"
-          maxW="400px"
-          w="90%"
-        >
-          <VStack gap={6}>
-            <VStack gap={2}>
-              <Heading size="lg" color="gray.700">
-                Helper Tool
-              </Heading>
-              <Text color="gray.500">
-                Sign in to access your dashboard
-              </Text>
-            </VStack>
-            <Button
-              size="lg"
-              w="full"
-              bg="orange.500"
-              color="white"
-              _hover={{ bg: 'orange.600' }}
-              onClick={login}
-            >
-              Sign in with Cognito
-            </Button>
-          </VStack>
-        </Box>
-      </Center>
-    )
-  }
-
   return (
     <Box minH="100vh" bg="gray.50">
-      <Header email={user.email} onLogout={logout} />
+      <Header email={email} onLogout={handleLogout} />
 
       <Container maxW="800px" py={6}>
         <Box bg="white" borderRadius="xl" boxShadow="sm" overflow="hidden">
-          {/* Custom Tabs */}
           <Flex borderBottom="1px solid" borderColor="gray.200">
             <Box
               as="button"
@@ -131,14 +126,36 @@ function App() {
             </Box>
           </Flex>
 
-          {/* Tab Content */}
           <Box p={6}>
             {activeTab === 'home' && <HomeTab />}
-            {activeTab === 'development' && <DevelopmentTab session={session} user={user} />}
+            {activeTab === 'development' && <DevelopmentTab session={session} user={authUser} />}
           </Box>
         </Box>
       </Container>
     </Box>
+  )
+}
+
+function App() {
+  return (
+    <ThemeProvider theme={authTheme}>
+      <Authenticator
+        hideSignUp={false}
+        components={{
+          Header() {
+            return (
+              <Box textAlign="center" py={6}>
+                <Box fontSize="2xl" fontWeight="bold" color="gray.700">
+                  Helper Tool
+                </Box>
+              </Box>
+            )
+          },
+        }}
+      >
+        <AppContent />
+      </Authenticator>
+    </ThemeProvider>
   )
 }
 
