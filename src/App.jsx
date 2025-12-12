@@ -141,6 +141,7 @@ function App() {
     <ThemeProvider theme={authTheme}>
       <Authenticator
         hideSignUp={false}
+        socialProviders={['google']}
         components={{
           Header() {
             return (
