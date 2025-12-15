@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
-import { fetchAuthSession, signOut } from 'aws-amplify/auth'
+import { fetchAuthSession, signOut, getCurrentUser } from 'aws-amplify/auth'
 import { Authenticator, useAuthenticator, ThemeProvider } from '@aws-amplify/ui-react'
 import '@aws-amplify/ui-react/styles.css'
 import { Box, Container, Flex, Spinner, Center } from '@chakra-ui/react'
 import Header from './components/Header'
 import HomeTab from './components/HomeTab'
 import DevelopmentTab from './components/DevelopmentTab'
+import LandingPage from './components/LandingPage'
+import PricingPage from './components/PricingPage'
 
 const authTheme = {
   name: 'helper-tool-theme',
@@ -66,11 +68,37 @@ function AppContent() {
       const authSession = await fetchAuthSession()
       setSession(authSession)
       setEmail(authSession.tokens?.idToken?.payload?.email)
+
+      // Check for pending plan from pricing page
+      const pendingPlan = localStorage.getItem('pendingPlan')
+      if (pendingPlan) {
+        localStorage.removeItem('pendingPlan')
+        handlePendingCheckout(pendingPlan, authSession)
+      }
     } catch {
       setSession(null)
       setEmail(null)
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function handlePendingCheckout(plan, authSession) {
+    try {
+      const token = authSession.tokens.idToken.toString()
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/stripe/checkout-url?plan=${plan}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      if (response.ok) {
+        const data = await response.json()
+        if (data.url) {
+          window.location.href = data.url
+        }
+      }
+    } catch (error) {
+      console.error('Pending checkout failed:', error)
     }
   }
 
@@ -137,6 +165,52 @@ function AppContent() {
 }
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(null) // null = loading
+  const [showAuth, setShowAuth] = useState(false)
+  const [currentPage, setCurrentPage] = useState('landing') // 'landing', 'pricing'
+
+  useEffect(() => {
+    checkAuth()
+  }, [])
+
+  async function checkAuth() {
+    try {
+      await getCurrentUser()
+      setIsAuthenticated(true)
+    } catch {
+      setIsAuthenticated(false)
+    }
+  }
+
+  // Loading state
+  if (isAuthenticated === null) {
+    return (
+      <Center h="100vh" bg="gray.50">
+        <Spinner size="xl" color="orange.500" borderWidth="4px" />
+      </Center>
+    )
+  }
+
+  // Not authenticated - show landing page, pricing, or auth
+  if (!isAuthenticated && !showAuth) {
+    if (currentPage === 'pricing') {
+      return (
+        <PricingPage
+          onSignIn={() => setShowAuth(true)}
+          onSelectPlan={() => setShowAuth(true)}
+          onBack={() => setCurrentPage('landing')}
+        />
+      )
+    }
+    return (
+      <LandingPage
+        onSignIn={() => setShowAuth(true)}
+        onPricing={() => setCurrentPage('pricing')}
+      />
+    )
+  }
+
+  // Show authenticator (either user clicked sign in, or is authenticated)
   return (
     <ThemeProvider theme={authTheme}>
       <Authenticator
