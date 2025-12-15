@@ -1,6 +1,7 @@
+import { Link as RouterLink } from 'react-router-dom'
 import { Box, Container, Text, Button, VStack, Link } from '@chakra-ui/react'
 
-function LandingPage({ onSignIn, onPricing }) {
+function LandingPage() {
   return (
     <Box minH="100vh" bg="gray.50">
       {/* Header */}
@@ -12,19 +13,21 @@ function LandingPage({ onSignIn, onPricing }) {
             </Text>
             <Box display="flex" gap={2}>
               <Button
+                as={RouterLink}
+                to="/pricing"
                 variant="ghost"
                 color="gray.600"
                 fontWeight="medium"
-                onClick={onPricing}
                 _hover={{ color: 'orange.500' }}
               >
                 Pricing
               </Button>
               <Button
+                as={RouterLink}
+                to="/app"
                 variant="ghost"
                 color="gray.600"
                 fontWeight="medium"
-                onClick={onSignIn}
                 _hover={{ color: 'orange.500' }}
               >
                 Sign In

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { fetchAuthSession, signOut, getCurrentUser } from 'aws-amplify/auth'
 import { Authenticator, useAuthenticator, ThemeProvider } from '@aws-amplify/ui-react'
 import '@aws-amplify/ui-react/styles.css'
@@ -52,8 +53,10 @@ const authTheme = {
   },
 }
 
-function AppContent() {
+// Protected dashboard content
+function Dashboard() {
   const { user: authUser, signOut: amplifySignOut } = useAuthenticator()
+  const navigate = useNavigate()
   const [session, setSession] = useState(null)
   const [email, setEmail] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -105,6 +108,7 @@ function AppContent() {
   async function handleLogout() {
     await signOut()
     amplifySignOut()
+    navigate('/')
   }
 
   if (loading) {
@@ -164,53 +168,8 @@ function AppContent() {
   )
 }
 
-function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(null) // null = loading
-  const [showAuth, setShowAuth] = useState(false)
-  const [currentPage, setCurrentPage] = useState('landing') // 'landing', 'pricing'
-
-  useEffect(() => {
-    checkAuth()
-  }, [])
-
-  async function checkAuth() {
-    try {
-      await getCurrentUser()
-      setIsAuthenticated(true)
-    } catch {
-      setIsAuthenticated(false)
-    }
-  }
-
-  // Loading state
-  if (isAuthenticated === null) {
-    return (
-      <Center h="100vh" bg="gray.50">
-        <Spinner size="xl" color="orange.500" borderWidth="4px" />
-      </Center>
-    )
-  }
-
-  // Not authenticated - show landing page, pricing, or auth
-  if (!isAuthenticated && !showAuth) {
-    if (currentPage === 'pricing') {
-      return (
-        <PricingPage
-          onSignIn={() => setShowAuth(true)}
-          onSelectPlan={() => setShowAuth(true)}
-          onBack={() => setCurrentPage('landing')}
-        />
-      )
-    }
-    return (
-      <LandingPage
-        onSignIn={() => setShowAuth(true)}
-        onPricing={() => setCurrentPage('pricing')}
-      />
-    )
-  }
-
-  // Show authenticator (either user clicked sign in, or is authenticated)
+// Protected route wrapper with Authenticator
+function ProtectedRoute() {
   return (
     <ThemeProvider theme={authTheme}>
       <Authenticator
@@ -228,9 +187,65 @@ function App() {
           },
         }}
       >
-        <AppContent />
+        <Dashboard />
       </Authenticator>
     </ThemeProvider>
+  )
+}
+
+// Public landing page wrapper - redirects to /app if authenticated
+function PublicLanding() {
+  const navigate = useNavigate()
+  const [checking, setChecking] = useState(true)
+
+  useEffect(() => {
+    getCurrentUser()
+      .then(() => navigate('/app', { replace: true }))
+      .catch(() => setChecking(false))
+  }, [navigate])
+
+  if (checking) {
+    return (
+      <Center h="100vh" bg="gray.50">
+        <Spinner size="xl" color="orange.500" borderWidth="4px" />
+      </Center>
+    )
+  }
+
+  return <LandingPage />
+}
+
+// Public pricing page wrapper - redirects to /app if authenticated
+function PublicPricing() {
+  const navigate = useNavigate()
+  const [checking, setChecking] = useState(true)
+
+  useEffect(() => {
+    getCurrentUser()
+      .then(() => navigate('/app', { replace: true }))
+      .catch(() => setChecking(false))
+  }, [navigate])
+
+  if (checking) {
+    return (
+      <Center h="100vh" bg="gray.50">
+        <Spinner size="xl" color="orange.500" borderWidth="4px" />
+      </Center>
+    )
+  }
+
+  return <PricingPage />
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<PublicLanding />} />
+        <Route path="/pricing" element={<PublicPricing />} />
+        <Route path="/app" element={<ProtectedRoute />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 

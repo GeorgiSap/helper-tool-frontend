@@ -1,4 +1,5 @@
-import { Box, Container, Text, Button, VStack, HStack, Link } from '@chakra-ui/react'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import { Box, Container, Text, Button, VStack, HStack } from '@chakra-ui/react'
 
 const plans = [
   {
@@ -21,10 +22,12 @@ const plans = [
   },
 ]
 
-function PricingPage({ onSignIn, onSelectPlan, onBack }) {
+function PricingPage() {
+  const navigate = useNavigate()
+
   function handleSelectPlan(planId) {
     localStorage.setItem('pendingPlan', planId)
-    onSelectPlan(planId)
+    navigate('/app')
   }
 
   return (
@@ -34,19 +37,21 @@ function PricingPage({ onSignIn, onSelectPlan, onBack }) {
         <Container maxW="800px">
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Text
+              as={RouterLink}
+              to="/"
               fontSize="xl"
               fontWeight="bold"
               color="gray.700"
-              cursor="pointer"
-              onClick={onBack}
+              _hover={{ textDecoration: 'none' }}
             >
               Helper Tool
             </Text>
             <Button
+              as={RouterLink}
+              to="/app"
               variant="ghost"
               color="gray.600"
               fontWeight="medium"
-              onClick={onSignIn}
               _hover={{ color: 'orange.500' }}
             >
               Sign In
