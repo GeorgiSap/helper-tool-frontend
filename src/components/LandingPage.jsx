@@ -38,42 +38,83 @@ function LandingPage() {
       </Box>
 
       {/* Hero */}
-      <Container maxW="800px" py={16}>
-        <VStack gap={8} textAlign="center">
-          <VStack gap={4}>
-            <Text fontSize="4xl" fontWeight="bold" color="gray.800" lineHeight="1.2">
-              Think Clearly Under Interview Pressure
+      <Box py={{ base: 16, md: 24 }}>
+        <Container maxW="800px">
+          <VStack gap={10} textAlign="center">
+            {/* Headline */}
+            <Text
+              fontSize={{ base: '4xl', md: '5xl' }}
+              fontWeight="bold"
+              color="gray.800"
+              lineHeight="1.1"
+            >
+              Your Interview Wingman
             </Text>
-            <Text fontSize="lg" color="gray.600" maxW="600px">
-              A desktop app that listens to your interview, transcribes questions in real-time,
-              and provides structured points to help you reason through answers — discretely.
-            </Text>
-          </VStack>
 
-          {/* CTA */}
-          <VStack gap={2}>
+            {/* Features Card */}
+            <Box
+              bg="white"
+              borderRadius="2xl"
+              boxShadow="lg"
+              p={{ base: 6, md: 8 }}
+              w="100%"
+              maxW="520px"
+            >
+              <VStack gap={4} align="start">
+                <Text fontSize="md" color="gray.600">
+                  <Text as="span" color="orange.500" fontWeight="bold" mr={2}>•</Text>
+                  <Text as="span" fontWeight="semibold" color="gray.700">Question Recognition</Text>
+                  <Text as="span"> — With structured talking points</Text>
+                </Text>
+                <Text fontSize="md" color="gray.600">
+                  <Text as="span" color="orange.500" fontWeight="bold" mr={2}>•</Text>
+                  <Text as="span" fontWeight="semibold" color="gray.700">Visual Task Analysis</Text>
+                  <Text as="span"> — Screenshot-based problem support</Text>
+                </Text>
+                <Text fontSize="md" color="gray.600">
+                  <Text as="span" color="orange.500" fontWeight="bold" mr={2}>•</Text>
+                  <Text as="span" fontWeight="semibold" color="gray.700">99+ Languages</Text>
+                  <Text as="span"> — Practice in your preferred language</Text>
+                </Text>
+                <Text fontSize="md" color="gray.600">
+                  <Text as="span" color="orange.500" fontWeight="bold" mr={2}>•</Text>
+                  <Text as="span" fontWeight="semibold" color="gray.700">Custom Context</Text>
+                  <Text as="span"> — Add CV, notes, or job details</Text>
+                </Text>
+                <Text fontSize="md" color="gray.600">
+                  <Text as="span" color="orange.500" fontWeight="bold" mr={2}>•</Text>
+                  <Text as="span" fontWeight="semibold" color="gray.700">Hidden Layout</Text>
+                  <Text as="span"> — Stays out of sight during screen share</Text>
+                </Text>
+              </VStack>
+            </Box>
+
+            {/* CTA */}
             <Link href="https://d2zadbp5zwt661.cloudfront.net/HelperTool.dmg" download>
               <Button
                 size="lg"
                 bg="orange.500"
                 color="white"
-                px={8}
-                _hover={{ bg: 'orange.600' }}
+                px={10}
+                py={6}
+                fontSize="md"
+                fontWeight="semibold"
+                borderRadius="xl"
+                boxShadow="md"
+                _hover={{ bg: 'orange.600', boxShadow: 'lg', transform: 'translateY(-1px)' }}
+                transition="all 0.2s"
               >
                 Download for macOS
               </Button>
             </Link>
-            <Text fontSize="sm" color="gray.500" fontStyle="italic">
-              Preview release
+
+            {/* Disclaimer */}
+            <Text fontSize="xs" color="gray.400" maxW="400px">
+              Designed to support your preparation and structured thinking, not to replace your expertise.
             </Text>
           </VStack>
-
-          {/* Disclaimer */}
-          <Text fontSize="xs" color="gray.400" maxW="400px">
-            Designed to support preparation and structured thinking, not to replace your expertise.
-          </Text>
-        </VStack>
-      </Container>
+        </Container>
+      </Box>
     </Box>
   )
 }

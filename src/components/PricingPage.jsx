@@ -1,24 +1,36 @@
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
-import { Box, Container, Text, Button, VStack, HStack } from '@chakra-ui/react'
+import { Box, Container, Text, Button, VStack, HStack, Link } from '@chakra-ui/react'
 
 const plans = [
   {
+    id: 'free',
+    name: 'Free',
+    price: '$0',
+    period: '',
+    description: 'Try it out',
+    featured: false,
+    isFree: true,
+    subtitle: 'Limited features',
+  },
+  {
     id: 'basic',
     name: 'Basic',
-    price: '$9',
+    price: '$9.99',
     period: '/month',
-    tokens: '3.5M tokens',
     description: 'For occasional use',
-    featured: false,
+    featured: true,
+    isFree: false,
+    subtitle: '~10 interview hours/month',
   },
   {
     id: 'pro',
     name: 'Pro',
-    price: '$19',
+    price: '$29.99',
     period: '/month',
-    tokens: '10M tokens',
     description: 'For regular interviews',
-    featured: true,
+    featured: false,
+    isFree: false,
+    subtitle: '~50 interview hours/month',
   },
 ]
 
@@ -61,7 +73,7 @@ function PricingPage() {
       </Box>
 
       {/* Pricing */}
-      <Container maxW="800px" py={16}>
+      <Container maxW="960px" py={16}>
         <VStack gap={8}>
           <VStack gap={2} textAlign="center">
             <Text fontSize="3xl" fontWeight="bold" color="gray.800">
@@ -72,7 +84,7 @@ function PricingPage() {
             </Text>
           </VStack>
 
-          <HStack gap={6} align="stretch" flexWrap="wrap" justify="center">
+          <HStack gap={4} align="stretch" justify="center" flexWrap={{ base: 'wrap', md: 'nowrap' }}>
             {plans.map((plan) => (
               <Box
                 key={plan.id}
@@ -82,7 +94,7 @@ function PricingPage() {
                 boxShadow={plan.featured ? 'lg' : 'sm'}
                 border="2px solid"
                 borderColor={plan.featured ? 'orange.500' : 'gray.200'}
-                w="280px"
+                w="260px"
                 position="relative"
               >
                 {plan.featured && (
@@ -102,7 +114,7 @@ function PricingPage() {
                     Popular
                   </Box>
                 )}
-                <VStack gap={4} align="stretch">
+                <VStack gap={4} align="stretch" h="100%">
                   <VStack gap={1}>
                     <Text fontSize="lg" fontWeight="semibold" color="gray.700">
                       {plan.name}
@@ -121,18 +133,37 @@ function PricingPage() {
                     </Text>
                   </Box>
 
-                  <Text fontSize="sm" color="gray.600" textAlign="center">
-                    {plan.tokens}
-                  </Text>
+                  <Box flex={1}>
+                    <Text fontSize="sm" color="gray.500" textAlign="center">
+                      {plan.subtitle}
+                    </Text>
+                  </Box>
 
-                  <Button
-                    bg={plan.featured ? 'orange.500' : 'gray.800'}
-                    color="white"
-                    _hover={{ bg: plan.featured ? 'orange.600' : 'gray.700' }}
-                    onClick={() => handleSelectPlan(plan.id)}
-                  >
-                    Choose {plan.name}
-                  </Button>
+                  <Box mt="auto" w="100%">
+                    {plan.isFree ? (
+                      <Link href="https://d2zadbp5zwt661.cloudfront.net/HelperTool.dmg" download w="100%" display="block">
+                        <Button
+                          variant="outline"
+                          borderColor="gray.300"
+                          color="gray.700"
+                          w="100%"
+                          _hover={{ bg: 'gray.50' }}
+                        >
+                          Download
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Button
+                        bg={plan.featured ? 'orange.500' : 'gray.800'}
+                        color="white"
+                        w="100%"
+                        _hover={{ bg: plan.featured ? 'orange.600' : 'gray.700' }}
+                        onClick={() => handleSelectPlan(plan.id)}
+                      >
+                        Choose {plan.name}
+                      </Button>
+                    )}
+                  </Box>
                 </VStack>
               </Box>
             ))}
