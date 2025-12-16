@@ -75,14 +75,9 @@ function PricingPage() {
       {/* Pricing */}
       <Container maxW="960px" py={16}>
         <VStack gap={8}>
-          <VStack gap={2} textAlign="center">
-            <Text fontSize="3xl" fontWeight="bold" color="gray.800">
-              Simple Pricing
-            </Text>
-            <Text fontSize="md" color="gray.600">
-              Choose a plan that fits your needs
-            </Text>
-          </VStack>
+          <Text fontSize="2xl" fontWeight="bold" color="gray.800">
+            Pricing
+          </Text>
 
           <HStack gap={4} align="stretch" justify="center" flexWrap={{ base: 'wrap', md: 'nowrap' }}>
             {plans.map((plan) => (
@@ -134,9 +129,23 @@ function PricingPage() {
                   </Box>
 
                   <Box flex={1}>
-                    <Text fontSize="sm" color="gray.500" textAlign="center">
-                      {plan.subtitle}
-                    </Text>
+                    {plan.isFree ? (
+                      <Text fontSize="sm" color="gray.400" textAlign="center">
+                        <Text as="span" mr={1}>✗</Text>
+                        Limited features
+                      </Text>
+                    ) : (
+                      <VStack gap={1}>
+                        <Text fontSize="sm" color="gray.600" textAlign="center">
+                          <Text as="span" mr={1}>✓</Text>
+                          <Text as="span" fontWeight="medium">All features</Text>
+                        </Text>
+                        <Text fontSize="sm" color="gray.500" textAlign="center">
+                          <Text as="span" fontWeight="semibold" color="gray.600">{plan.subtitle.split(' ')[0]}</Text>
+                          {' '}{plan.subtitle.split(' ').slice(1).join(' ')}
+                        </Text>
+                      </VStack>
+                    )}
                   </Box>
 
                   <Box mt="auto" w="100%">
@@ -147,6 +156,9 @@ function PricingPage() {
                           borderColor="gray.300"
                           color="gray.700"
                           w="100%"
+                          py={5}
+                          fontSize="md"
+                          borderRadius="lg"
                           _hover={{ bg: 'gray.50' }}
                         >
                           Download
@@ -157,6 +169,10 @@ function PricingPage() {
                         bg={plan.featured ? 'orange.500' : 'gray.800'}
                         color="white"
                         w="100%"
+                        py={5}
+                        fontSize="md"
+                        borderRadius="lg"
+                        boxShadow="sm"
                         _hover={{ bg: plan.featured ? 'orange.600' : 'gray.700' }}
                         onClick={() => handleSelectPlan(plan.id)}
                       >
