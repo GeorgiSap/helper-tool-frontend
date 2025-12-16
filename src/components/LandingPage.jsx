@@ -55,8 +55,8 @@ function LandingPage() {
             <Box
               bg="white"
               borderRadius="2xl"
-              boxShadow="lg"
-              p={{ base: 6, md: 8 }}
+              boxShadow="sm"
+              p={6}
               w="100%"
               maxW="520px"
             >
@@ -95,13 +95,13 @@ function LandingPage() {
                 size="lg"
                 bg="orange.500"
                 color="white"
-                px={10}
-                py={6}
-                fontSize="md"
+                px={12}
+                py={7}
+                fontSize="lg"
                 fontWeight="semibold"
                 borderRadius="xl"
-                boxShadow="md"
-                _hover={{ bg: 'orange.600', boxShadow: 'lg', transform: 'translateY(-1px)' }}
+                boxShadow="lg"
+                _hover={{ bg: 'orange.600', boxShadow: 'xl', transform: 'translateY(-1px)' }}
                 transition="all 0.2s"
               >
                 Download for macOS
