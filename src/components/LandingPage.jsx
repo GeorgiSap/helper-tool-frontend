@@ -63,28 +63,28 @@ function LandingPage() {
               <VStack gap={4} align="start">
                 <Text fontSize="md" color="gray.600">
                   <Text as="span" color="orange.500" fontWeight="bold" mr={2}>•</Text>
-                  <Text as="span" fontWeight="semibold" color="gray.700">Question Recognition</Text>
-                  <Text as="span"> — With structured talking points</Text>
+                  <Text as="span" fontWeight="semibold" color="gray.700">Live Question Recognition</Text>
+                  <Text as="span"> — Hints & talking points</Text>
                 </Text>
                 <Text fontSize="md" color="gray.600">
                   <Text as="span" color="orange.500" fontWeight="bold" mr={2}>•</Text>
-                  <Text as="span" fontWeight="semibold" color="gray.700">Visual Task Analysis</Text>
-                  <Text as="span"> — Screenshot-based problem support</Text>
+                  <Text as="span" fontWeight="semibold" color="gray.700">Code Challenges</Text>
+                  <Text as="span"> — Problem breakdown & tips</Text>
                 </Text>
                 <Text fontSize="md" color="gray.600">
                   <Text as="span" color="orange.500" fontWeight="bold" mr={2}>•</Text>
-                  <Text as="span" fontWeight="semibold" color="gray.700">99+ Languages</Text>
-                  <Text as="span"> — Practice in your preferred language</Text>
+                  <Text as="span" fontWeight="semibold" color="gray.700">Multilingual Support</Text>
+                  <Text as="span"> — 99+ languages</Text>
                 </Text>
                 <Text fontSize="md" color="gray.600">
                   <Text as="span" color="orange.500" fontWeight="bold" mr={2}>•</Text>
                   <Text as="span" fontWeight="semibold" color="gray.700">Custom Context</Text>
-                  <Text as="span"> — Add CV, notes, or job details</Text>
+                  <Text as="span"> — CV, notes, job posting</Text>
                 </Text>
                 <Text fontSize="md" color="gray.600">
                   <Text as="span" color="orange.500" fontWeight="bold" mr={2}>•</Text>
                   <Text as="span" fontWeight="semibold" color="gray.700">Hidden Layout</Text>
-                  <Text as="span"> — Stays out of sight during screen share</Text>
+                  <Text as="span"> — Screen share safe</Text>
                 </Text>
               </VStack>
             </Box>
